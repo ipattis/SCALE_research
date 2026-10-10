@@ -1,0 +1,538 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI in education research: the evidence (SCALE repository)</title>
+<style>
+.viz-root {
+  color-scheme: light;
+  --page: #f9f9f7; --surface-1: #fcfcfb; --text-primary: #0b0b0b; --text-secondary: #52514e; --muted: #898781;
+  --grid: #e1e0d9; --axis: #c3c2b7; --border: rgba(11,11,11,.10); --accent: #2a78d6; --warn-bg: #fff4e5; --warn-ink: #8a4b00;
+  --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100; --s5: #e87ba4; --s6: #008300; --s7: #4a3aa7; --s8: #e34948;
+  --pos: #2a78d6; --mixed: #86b6ef; --null: #c3c2b7; --neg: #e34948; --mid: #f0efec;
+  --q1: #cde2fb; --q2: #9ec5f4; --q3: #6da7ec; --q4: #3987e5; --q5: #256abf; --q6: #184f95; --q7: #0d366b;
+}
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme="light"])) .viz-root {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface-1: #1a1a19; --text-primary: #ffffff; --text-secondary: #c3c2b7; --muted: #898781;
+    --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,.10); --accent: #3987e5; --warn-bg: #3a2a12; --warn-ink: #f5c27a;
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --s6: #008300; --s7: #9085e9; --s8: #e66767;
+    --pos: #3987e5; --mixed: #1c5cab; --null: #52514e; --neg: #e66767; --mid: #383835;
+    --q1: #104281; --q2: #184f95; --q3: #1c5cab; --q4: #256abf; --q5: #3987e5; --q6: #6da7ec; --q7: #b7d3f6;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; }
+.viz-root { background: var(--page); color: var(--text-primary); font: 14px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; min-height: 100vh; }
+header { padding: 28px 32px 8px; max-width: 1240px; margin: 0 auto; }
+header h1 { font-size: 26px; margin: 0 0 4px; font-weight: 650; }
+header p { margin: 4px 0; color: var(--text-secondary); max-width: 900px; }
+nav.links { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0 4px; }
+nav.links a, .pill { font: 500 13px system-ui, sans-serif; border: 1px solid var(--border); background: var(--surface-1); color: var(--text-primary);
+  border-radius: 16px; padding: 5px 12px; text-decoration: none; cursor: pointer; }
+nav.links a.active, .pill.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+#filters { position: sticky; top: 0; z-index: 10; background: var(--page); border-bottom: 1px solid var(--border); }
+#filters .inner { max-width: 1240px; margin: 0 auto; padding: 10px 32px; display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+#filters label { font-size: 12.5px; color: var(--text-secondary); display: flex; gap: 6px; align-items: center; }
+select, input[type=search] { font: 13px system-ui, sans-serif; padding: 5px 8px; border-radius: 8px; border: 1px solid var(--axis);
+  background: var(--surface-1); color: var(--text-primary); }
+#scope-n { font-size: 13px; color: var(--text-secondary); margin-left: auto; }
+main { max-width: 1240px; margin: 0 auto; padding: 8px 32px 60px; display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; }
+.card { grid-column: span 12; background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px 14px; min-width: 0; }
+.card.half { grid-column: span 6; }
+.card.third { grid-column: span 4; }
+@media (max-width: 900px) { .card.half, .card.third { grid-column: span 12; } main, header, #filters .inner { padding-left: 14px; padding-right: 14px; } }
+.card h2 { font-size: 16.5px; margin: 0 0 2px; font-weight: 650; line-height: 1.35; }
+.card .sub { color: var(--text-secondary); font-size: 12.5px; margin: 0 0 10px; }
+.card details { margin-top: 8px; font-size: 12.5px; color: var(--text-secondary); }
+.card details summary { cursor: pointer; }
+.tiles { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+@media (max-width: 900px) { .tiles { grid-template-columns: repeat(2, 1fr); } }
+.tile { padding: 4px 2px; }
+.tile .label { font-size: 12.5px; color: var(--text-secondary); }
+.tile .value { font-size: 30px; font-weight: 600; line-height: 1.2; }
+.tile .note { font-size: 11.5px; color: var(--muted); }
+.tile.hero .value { font-size: 48px; }
+svg text { fill: var(--text-secondary); font: 12px system-ui, sans-serif; }
+svg text.strong { fill: var(--text-primary); font-weight: 600; }
+svg text.muted { fill: var(--muted); font-size: 11px; }
+svg .grid { stroke: var(--grid); stroke-width: 1; }
+svg .axis { stroke: var(--axis); stroke-width: 1; }
+svg .hit { fill: transparent; cursor: default; }
+svg .mark { transition: opacity .1s; }
+svg g.hov .mark { opacity: .8; }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12px; color: var(--text-secondary); margin: 2px 0 8px; }
+.legend span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; background: var(--c); }
+.toggle { display: inline-flex; gap: 4px; margin: 0 0 8px; flex-wrap: wrap; }
+.toggle .pill { font-size: 12px; padding: 3px 10px; }
+#tip { position: fixed; pointer-events: none; z-index: 50; background: var(--surface-1); color: var(--text-primary); border: 1px solid var(--border);
+  box-shadow: 0 4px 16px rgba(0,0,0,.15); border-radius: 8px; padding: 7px 10px; font-size: 12.5px; max-width: 320px; display: none; }
+#tip b { font-size: 14px; }
+#tip .k { color: var(--text-secondary); }
+table.data { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+table.data th { text-align: left; font-weight: 600; color: var(--text-secondary); border-bottom: 1px solid var(--axis); padding: 5px 6px; position: sticky; top: 0; background: var(--surface-1); }
+table.data td { border-bottom: 1px solid var(--grid); padding: 6px; vertical-align: top; }
+table.data td.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+table.data a { color: var(--accent); text-decoration: none; }
+.scroll { max-height: 560px; overflow: auto; }
+.callout { background: var(--warn-bg); color: var(--warn-ink); border-radius: 8px; padding: 8px 12px; font-size: 12.5px; margin: 8px 0; }
+.method p, .method li { color: var(--text-secondary); font-size: 13px; }
+.dirtag { display: inline-block; font-size: 11px; padding: 1px 7px; border-radius: 9px; border: 1px solid var(--border); white-space: nowrap; }
+.dirtag::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; background: var(--c); }
+</style>
+</head>
+<body>
+<div class="viz-root">
+<header>
+  <h1>AI in education research: what kind of evidence is there?</h1>
+  <p>An evidence read-out of the <a href="https://scale.stanford.edu/ai/repository" style="color:var(--accent)">Stanford SCALE AI Hub research
+    repository</a>. SCALE curates the papers and tags them (application, user, age, purpose, design). Each paper's
+    <b>evidence profile</b> (study type, what was measured, direction of the result, sample size, country, AI tool)
+    is AI-extracted from its abstract and then audited by a second LLM pass. It describes <i>what kind</i> of evidence a paper reports,
+    not how good it is. Read the papers before relying on them.</p>
+  <nav class="links">
+    <a href="index.html">Map: by topic</a><a href="problem.html">Map: by need</a><a href="method.html">Map: by AI use</a>
+    <a href="evidence.html" class="active">Evidence</a>
+  </nav>
+</header>
+<div id="filters"><div class="inner">
+  <label>Learners <select id="f-age">
+    <option value="all">All ages</option><option value="k12">K-12 (any K-12 tag)</option>
+    <option value="post">Post-secondary / adult (any)</option><option value="early">Early childhood (0-3)</option></select></label>
+  <label>AI type <select id="f-ai"><option value="all">All AI</option><option value="gen">Generative AI / LLMs</option><option value="other">Other AI</option></select></label>
+  <label>Application <select id="f-app"><option value="all">All applications</option></select></label>
+  <span id="scope-n"></span>
+</div></div>
+<main>
+  <section class="card"><div class="tiles" id="tiles"></div></section>
+
+  <section class="card half"><h2 id="h-growth"></h2><p class="sub">Papers per quarter, by when they first appeared (arXiv id, else SCALE's date). The last quarter is partial.</p>
+    <div id="c-growth"></div><details><summary>Table</summary><div id="t-growth"></div></details></section>
+  <section class="card half"><h2 id="h-mix"></h2><p class="sub">Share of each period's papers in each evidence tier.</p>
+    <div class="legend" id="l-mix"></div><div id="c-mix"></div><details><summary>Table</summary><div id="t-mix"></div></details></section>
+
+  <section class="card"><h2 id="h-tiers"></h2><p class="sub">Evidence tier is a fixed rule over the extracted study type and outcomes. Hover a bar for its definition.</p>
+    <div id="c-tiers"></div><details><summary>Table</summary><div id="t-tiers"></div></details></section>
+
+  <section class="card"><h2 id="h-gap"></h2>
+    <p class="sub">Evidence gap map: SCALE's <i>application</i> tags (rows) × <i>why use AI</i> tags (columns). Papers carry several tags, so a paper can count in several cells. Darker = more papers.</p>
+    <div class="toggle" id="g-metric"><button class="pill active" data-m="all">All papers</button><button class="pill" data-m="causal">Causal studies (RCT / quasi-exp.)</button><button class="pill" data-m="learn">Causal evidence on learning</button></div>
+    <div id="c-gap" class="scroll" style="max-height:none"></div><details><summary>Table</summary><div id="t-gap"></div></details></section>
+
+  <section class="card half"><h2 id="h-out"></h2><p class="sub">Empirical studies with learners or educators (tiers 1-4), by outcome measured. A study can measure several.</p>
+    <div id="c-out"></div><details><summary>Table</summary><div id="t-out"></div></details></section>
+  <section class="card half"><h2 id="h-dir"></h2><p class="sub">Direction of the main reported result. Abstracts favour positive findings, and so does publication.</p>
+    <div class="legend" id="l-dir"></div><div id="c-dir"></div><details><summary>Table</summary><div id="t-dir"></div></details></section>
+
+  <section class="card half"><h2 id="h-n"></h2><p class="sub">Causal studies (RCT or quasi-experiment) by number of participants stated in the abstract.</p>
+    <div id="c-n"></div><details><summary>Table</summary><div id="t-n"></div></details></section>
+  <section class="card half"><h2 id="h-trend"></h2><p class="sub">Topics (mid level of the topic map) whose share of papers changed most, <span id="trend-span"></span>. Topics with fewer than 6 recent papers are left out.</p>
+    <div id="c-trend"></div><details><summary>Table</summary><div id="t-trend"></div></details></section>
+
+  <section class="card third"><h2 id="h-ctry"></h2><p class="sub">Where studies took place, when the abstract says.</p><div id="c-ctry"></div></section>
+  <section class="card third"><h2 id="h-subj"></h2><p class="sub">Subject area of the study.</p><div id="c-subj"></div></section>
+  <section class="card third"><h2 id="h-tool"></h2><p class="sub">AI products or models named in the abstract.</p><div id="c-tool"></div></section>
+
+  <section class="card"><h2 id="h-tags"></h2>
+    <p class="sub">SCALE's <i>study design</i> tags compared with the design each abstract describes (AI-extracted, audited). Disagreement isn't always an error, because a tag can describe the wider project. It does mean that filtering on the tag alone gives a different set of papers.</p>
+    <div id="c-tags"></div></section>
+
+  <section class="card"><h2 id="h-list"></h2>
+    <p class="sub">Every paper in the scope whose abstract describes a randomized or quasi-experimental design that measures learning. ⚠ marks papers where the audit questioned part of the extraction.</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px"><input type="search" id="list-q" placeholder="Search title, finding, tool, country…" style="flex:1;min-width:220px">
+      <select id="list-sort"><option value="n">Largest sample first</option><option value="m">Newest first</option><option value="c">Most cited first</option></select>
+      <select id="list-dir"><option value="">Any result</option><option>Positive</option><option>Mixed</option><option>No effect</option><option>Negative</option></select></div>
+    <div class="scroll" id="c-list"></div></section>
+
+  <section class="card method"><h2>How this page is made</h2><div id="method"></div></section>
+</main>
+<div id="tip" role="tooltip"></div>
+</div>
+<script>
+const D = /*__DATA__*/null;
+const $ = (id) => document.getElementById(id);
+const fmt = (n) => Number(n).toLocaleString("en-US");
+const pct = (a, b) => (b ? Math.round((100 * a) / b) : 0) + "%";
+const css = (v) => getComputedStyle(document.querySelector(".viz-root")).getPropertyValue(v).trim();
+const TIER_VARS = ["--s1", "--s2", "--s3", "--s4", "--s5", "--s6", "--s7", "--s8"];
+const DIRS = ["Positive", "Mixed", "No effect", "Negative"];
+const DIR_VARS = { Positive: "--pos", Mixed: "--mixed", "No effect": "--null", Negative: "--neg" };
+const K12 = new Set(["Elementary (PK5)", "Middle School (6-8)", "High School (9-12)"]);
+const SVGNS = "http://www.w3.org/2000/svg";
+
+// ---------- tiny DOM helpers (labels are data: always textContent) ----------
+function el(tag, attrs = {}, text) {
+  const e = tag.startsWith("svg:") ? document.createElementNS(SVGNS, tag.slice(4)) : document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) if (v !== undefined && v !== null) e.setAttribute(k, v);
+  if (text !== undefined) e.textContent = text;
+  return e;
+}
+const svgEl = (tag, attrs, text) => el("svg:" + tag, attrs, text);
+function clear(id) { const n = $(id); n.replaceChildren(); return n; }
+const tip = $("tip");
+function showTip(ev, rows) {
+  tip.replaceChildren();
+  rows.forEach(([v, k], i) => {
+    const line = el("div");
+    if (v !== null) line.append(el(i === 0 ? "b" : "span", {}, v));
+    if (k) line.append(el("span", { class: "k" }, (v !== null ? " " : "") + k));
+    tip.append(line);
+  });
+  tip.style.display = "block";
+  const r = tip.getBoundingClientRect();
+  tip.style.left = Math.min(ev.clientX + 14, innerWidth - r.width - 8) + "px";
+  tip.style.top = Math.min(ev.clientY + 14, innerHeight - r.height - 8) + "px";
+}
+const hideTip = () => { tip.style.display = "none"; };
+function hover(g, rows) {
+  const on = (e) => { g.classList.add("hov"); showTip(e, rows()); };
+  g.addEventListener("pointermove", on); g.addEventListener("focus", (e) => { const b = g.getBoundingClientRect(); on({ clientX: b.right, clientY: b.top }); });
+  g.addEventListener("pointerleave", () => { g.classList.remove("hov"); hideTip(); });
+  g.addEventListener("blur", () => { g.classList.remove("hov"); hideTip(); });
+  g.setAttribute("tabindex", "0");
+}
+function table(id, head, rows) {
+  const t = el("table", { class: "data" }), tr = el("tr");
+  head.forEach((h) => tr.append(el("th", {}, h)));
+  t.append(tr);
+  rows.forEach((r) => { const row = el("tr"); r.forEach((c, i) => row.append(el("td", i && typeof c === "number" ? { class: "num" } : {}, typeof c === "number" ? fmt(c) : c))); t.append(row); });
+  clear(id).append(t);
+}
+function legend(id, items) {
+  const l = clear(id);
+  items.forEach(([label, v]) => { const s = el("span", {}, label); s.style.setProperty("--c", css(v)); l.append(s); });
+}
+// Bar with a 4px rounded data-end and square baseline.
+function barPath(x, y, w, h, horiz) {
+  const r = Math.min(4, horiz ? h / 2 : w / 2, horiz ? w : h);
+  if (w <= 0 || h <= 0) return "";
+  return horiz
+    ? `M${x},${y}H${x + w - r}Q${x + w},${y} ${x + w},${y + r}V${y + h - r}Q${x + w},${y + h} ${x + w - r},${y + h}H${x}Z`
+    : `M${x},${y + h}V${y + r}Q${x},${y} ${x + r},${y}H${x + w - r}Q${x + w},${y} ${x + w},${y + r}V${y + h}Z`;
+}
+const width = (id) => Math.max(280, $(id).clientWidth || 600);
+// Shorten a label to fit `px` at 12px system-ui (~6.4px/char); the tooltip and table keep the full text.
+const fit = (label, px) => { const n = Math.floor(px / 6.4); return label.length > n ? label.slice(0, n - 1).trimEnd() + "…" : label; };
+
+// ---------- chart forms ----------
+// Horizontal bars, one series. rows: [{label, value, note, help}]
+function hbar(id, rows, { total, color = "--s1", labelW } = {}) {
+  const W = width(id), rowH = 28, lw = labelW ?? Math.min(250, W * 0.42), vw = 70, pw = W - lw - vw;
+  const max = Math.max(1, ...rows.map((r) => r.value));
+  const svg = svgEl("svg", { width: W, height: rows.length * rowH + 6, role: "img" });
+  rows.forEach((r, i) => {
+    const g = svgEl("g"), y = i * rowH + 4, w = (pw * r.value) / max;
+    g.append(svgEl("text", { x: lw - 8, y: y + 15, "text-anchor": "end" }, fit(r.label, lw - 12)));
+    g.append(svgEl("path", { class: "mark", d: barPath(lw, y + 4, Math.max(w, r.value ? 2 : 0), 16, true), fill: css(r.color || color) }));
+    g.append(svgEl("text", { x: lw + w + 6, y: y + 16, class: "strong" }, fmt(r.value) + (total ? ` · ${pct(r.value, total)}` : "")));
+    g.append(svgEl("rect", { class: "hit", x: 0, y, width: W, height: rowH }));
+    hover(g, () => [[fmt(r.value) + (total ? ` (${pct(r.value, total)})` : ""), r.label], ...(r.help ? [[null, r.help]] : [])]);
+    svg.append(g);
+  });
+  clear(id).append(svg);
+}
+// Vertical columns, one series. cols: [{label, value, partial}]
+function columns(id, cols, { color = "--s1", tickEvery = 1 } = {}) {
+  const W = width(id), H = 220, left = 36, bottom = 28, pw = W - left - 6, ph = H - bottom - 14;
+  const max = Math.max(1, ...cols.map((c) => c.value)), step = niceStep(max), top = Math.ceil(max / step) * step;
+  const svg = svgEl("svg", { width: W, height: H, role: "img" });
+  for (let v = 0; v <= top; v += step) {
+    const y = 14 + ph - (ph * v) / top;
+    svg.append(svgEl("line", { class: v ? "grid" : "axis", x1: left, x2: W - 6, y1: y, y2: y }));
+    svg.append(svgEl("text", { x: left - 6, y: y + 4, "text-anchor": "end", class: "muted" }, fmt(v)));
+  }
+  const band = pw / cols.length, bw = Math.min(24, band - 2);
+  cols.forEach((c, i) => {
+    const g = svgEl("g"), h = (ph * c.value) / top, x = left + i * band + (band - bw) / 2;
+    g.append(svgEl("path", { class: "mark", d: barPath(x, 14 + ph - h, bw, h, false), fill: css(color), opacity: c.partial ? 0.45 : 1 }));
+    if (i % tickEvery === 0 || i === cols.length - 1) g.append(svgEl("text", { x: x + bw / 2, y: H - 10, "text-anchor": "middle", class: "muted" }, c.label));
+    g.append(svgEl("rect", { class: "hit", x: left + i * band, y: 0, width: band, height: H }));
+    hover(g, () => [[fmt(c.value) + " papers", c.label + (c.partial ? " (partial quarter)" : "")]]);
+    svg.append(g);
+  });
+  clear(id).append(svg);
+}
+function niceStep(max) { const raw = max / 4, p = Math.pow(10, Math.floor(Math.log10(raw))); return [1, 2, 2.5, 5, 10].map((m) => m * p).find((s) => s >= raw); }
+// 100% stacked horizontal bars. groups: [{label, parts: [values], n}], keys: [[label, cssVar]]
+function stacked(id, groups, keys) {
+  const W = width(id), lw = Math.min(200, W * 0.3), rowH = 34, pw = W - lw - 50;
+  const svg = svgEl("svg", { width: W, height: groups.length * rowH + 4, role: "img" });
+  groups.forEach((gr, i) => {
+    const y = i * rowH + 6, tot = gr.parts.reduce((a, b) => a + b, 0);
+    svg.append(svgEl("text", { x: lw - 8, y: y + 15, "text-anchor": "end" }, fit(gr.label, lw - 12)));
+    svg.append(svgEl("text", { x: lw + pw + 6, y: y + 15, class: "muted" }, "n=" + fmt(tot)));
+    let x = lw;
+    gr.parts.forEach((v, k) => {
+      if (!v) return;
+      const w = (pw * v) / tot, g = svgEl("g");
+      g.append(svgEl("rect", { class: "mark", x: x, y, width: Math.max(0, w - 2), height: 20, fill: css(keys[k][1]), rx: 0 }));
+      g.append(svgEl("rect", { class: "hit", x, y: y - 4, width: w, height: 28 }));
+      hover(g, () => [[`${pct(v, tot)} (${fmt(v)})`, keys[k][0]], [null, gr.label]]);
+      svg.append(g); x += w;
+    });
+  });
+  clear(id).append(svg);
+}
+// Diverging bars around zero (share change). rows: [{label, value, note}]
+function diverging(id, rows) {
+  const W = width(id), rowH = 26, lw = Math.min(300, W * 0.5), pw = W - lw - 50, mid = lw + pw / 2;
+  const max = Math.max(0.1, ...rows.map((r) => Math.abs(r.value)));
+  const svg = svgEl("svg", { width: W, height: rows.length * rowH + 8, role: "img" });
+  svg.append(svgEl("line", { class: "axis", x1: mid, x2: mid, y1: 0, y2: rows.length * rowH + 8 }));
+  rows.forEach((r, i) => {
+    const g = svgEl("g"), y = i * rowH + 5, w = ((pw / 2) * Math.abs(r.value)) / max, up = r.value >= 0;
+    g.append(svgEl("text", { x: lw - 8, y: y + 14, "text-anchor": "end" }, fit(r.label, lw - 12)));
+    const x = up ? mid : mid - w;
+    g.append(svgEl("rect", { class: "mark", x, y: y + 3, width: Math.max(w, 1), height: 14, rx: 3, fill: css(up ? "--pos" : "--neg") }));
+    g.append(svgEl("text", { x: up ? mid + w + 4 : mid - w - 4, y: y + 14, "text-anchor": up ? "start" : "end", class: "strong" }, `×${Math.pow(2, r.value).toFixed(1)}`));
+    g.append(svgEl("rect", { class: "hit", x: 0, y, width: W, height: rowH }));
+    hover(g, () => [[`share ×${Math.pow(2, r.value).toFixed(2)}`, r.label], [null, r.note]]);
+    svg.append(g);
+  });
+  clear(id).append(svg);
+}
+// Heatmap. rows/cols: labels; value(r, c) -> {v, sub}
+function heatmap(id, rows, cols, value, { metricLabel }) {
+  const W = Math.max(width(id), 760), lw = 260, top = 96, cw = (W - lw - 8) / cols.length, ch = 34;
+  const vals = rows.flatMap((r) => cols.map((c) => value(r, c).v)), max = Math.max(1, ...vals);
+  const ramp = ["--q1", "--q2", "--q3", "--q4", "--q5", "--q6", "--q7"];
+  const svg = svgEl("svg", { width: W, height: top + rows.length * ch + 4, role: "img" });
+  cols.forEach((c, j) => {
+    const x = lw + j * cw + cw / 2, t = svgEl("text", { x: 0, y: 0, transform: `translate(${x},${top - 8}) rotate(-28)`, class: "muted" });
+    t.textContent = c.replace("Outcomes – ", ""); svg.append(t);
+  });
+  rows.forEach((r, i) => {
+    const y = top + i * ch;
+    svg.append(svgEl("text", { x: lw - 8, y: y + ch / 2 + 4, "text-anchor": "end" }, r));
+    cols.forEach((c, j) => {
+      const { v, sub } = value(r, c), g = svgEl("g"), x = lw + j * cw;
+      const step = v ? Math.min(ramp.length - 1, Math.floor((ramp.length * Math.sqrt(v)) / Math.sqrt(max + 1e-9))) : -1;
+      const fill = v ? css(ramp[step]) : css("--mid");
+      g.append(svgEl("rect", { class: "mark", x: x + 1, y: y + 1, width: cw - 2, height: ch - 2, rx: 3, fill }));
+      const dark = step >= 4 && !matchMedia("(prefers-color-scheme: dark)").matches || (matchMedia("(prefers-color-scheme: dark)").matches && step < 4 && step >= 0);
+      const label = svgEl("text", { x: x + cw / 2, y: y + ch / 2 + 4, "text-anchor": "middle" }, v ? fmt(v) : "0");
+      label.style.fill = v ? (dark ? "#ffffff" : "#0b0b0b") : css("--muted");
+      if (v) label.style.fontWeight = 600;
+      g.append(label);
+      g.append(svgEl("rect", { class: "hit", x, y, width: cw, height: ch }));
+      hover(g, () => [[`${fmt(v)} ${metricLabel}`, ""], [null, `${r} × ${c}`], ...(sub ? [[null, sub]] : [])]);
+      svg.append(g);
+    });
+  });
+  const box = clear(id); box.style.overflowX = "auto"; box.append(svg);
+}
+
+// ---------- scope ----------
+D.facets.application.options.forEach((o) => $("f-app").append(el("option", { value: o }, o)));
+function scoped() {
+  const age = $("f-age").value, ai = $("f-ai").value, app = $("f-app").value;
+  return D.papers.filter((p) =>
+    (age === "all" || (age === "k12" ? p.age_tags_k12 : age === "post" ? p.age_tags_post : p.age_tags_early)) &&
+    (ai === "all" || (ai === "gen" ? p.g : !p.g)) && (app === "all" || p.application.includes(app)));
+}
+D.papers.forEach((p) => {
+  p.age_tags_k12 = p.age.some((a) => K12.has(a));
+  p.age_tags_post = p.age.some((a) => a === "Post-Secondary" || a === "Adult");
+  p.age_tags_early = p.age.includes("0-3 years");
+  p.learn = p.out.includes("Learning / achievement");
+  p.causal = p.tier <= 1;
+  p.empirical = p.tier <= 3;
+});
+const scopeName = () => {
+  const bits = [];
+  if ($("f-age").value !== "all") bits.push($("f-age").selectedOptions[0].textContent.replace(/ \(.*\)/, ""));
+  if ($("f-ai").value !== "all") bits.push($("f-ai").selectedOptions[0].textContent);
+  if ($("f-app").value !== "all") bits.push($("f-app").value);
+  return bits.length ? bits.join(", ") : "";
+};
+const inScope = (s) => (scopeName() ? ` (${scopeName()})` : "");
+
+// ---------- render ----------
+let gapMetric = "all";
+function render() {
+  const P = scoped(), N = P.length;
+  $("scope-n").textContent = `${fmt(N)} of ${fmt(D.papers.length)} papers in scope`;
+  if (!N) { ["tiles"].forEach(clear); return; }
+
+  // Tiles
+  const learnN = P.filter((p) => p.learn).length, causalLearn = P.filter((p) => p.tier === 0), peer = P.filter((p) => p.peer === true).length;
+  const known = P.filter((p) => p.peer !== null).length;
+  const ns = P.filter((p) => p.empirical && p.n > 0).map((p) => p.n).sort((a, b) => a - b);
+  const tiles = clear("tiles");
+  [[fmt(N), "Papers", scopeName() || "Whole repository", true],
+   [pct(learnN, N), "Measure learning outcomes", `${fmt(learnN)} papers measure learning or achievement`],
+   [fmt(causalLearn.length), "Causal studies of learning", `${pct(causalLearn.length, N)} of papers: RCT or quasi-experiment`],
+   [pct(peer, known), "Peer reviewed", `of ${fmt(known)} found in Semantic Scholar; the rest are preprints`],
+   [ns.length ? fmt(ns[Math.floor(ns.length / 2)]) : "–", "Median participants", `across ${fmt(ns.length)} empirical studies stating a sample`],
+  ].forEach(([v, l, n, hero]) => { const t = el("div", { class: "tile" + (hero ? " hero" : "") }); t.append(el("div", { class: "label" }, l), el("div", { class: "value" }, v), el("div", { class: "note" }, n)); tiles.append(t); });
+
+  // Growth by quarter
+  const q = {}; P.forEach((p) => { if (!p.m) return; const y = +p.m.slice(0, 4), k = y < 2023 ? "Before 2023" : `${y} Q${Math.ceil(+p.m.slice(5, 7) / 3)}`; q[k] = (q[k] || 0) + 1; });
+  const quarters = ["Before 2023"]; for (let y = 2023; y <= 2026; y++) for (let k = 1; k <= 4; k++) quarters.push(`${y} Q${k}`);
+  const lastM = D.papers.reduce((m, p) => (p.m > m ? p.m : m), ""), lastQ = `${lastM.slice(0, 4)} Q${Math.ceil(+lastM.slice(5, 7) / 3)}`;
+  const qs = quarters.slice(0, quarters.indexOf(lastQ) + 1).map((k) => ({ label: k.replace(" Q", "·Q").replace("Before 2023", "<2023"), value: q[k] || 0, partial: k === lastQ && +lastM.slice(5, 7) % 3 !== 0 }));
+  columns("c-growth", qs, { tickEvery: 4 });
+  const c24 = P.filter((p) => p.p === "2024").length, c25 = P.filter((p) => p.p === "2025").length;
+  $("h-growth").textContent = c24 ? `${(c25 / c24).toFixed(1)}× as many papers first appeared in 2025 as in 2024${inScope()}` : `Papers over time${inScope()}`;
+  table("t-growth", ["Quarter", "Papers"], qs.map((c) => [c.label, c.value]));
+
+  // Evidence mix by period
+  const periodGroups = D.periods.map((per) => { const pp = P.filter((p) => p.p === per); return { label: per, parts: D.tiers.map((_, t) => pp.filter((p) => p.tier === t).length) }; });
+  legend("l-mix", D.tiers.map((t, i) => [t, TIER_VARS[i]]));
+  stacked("c-mix", periodGroups, D.tiers.map((t, i) => [t, TIER_VARS[i]]));
+  const share = (g) => { const tot = g.parts.reduce((a, b) => a + b, 0); return tot ? g.parts[0] / tot : 0; };
+  const s0 = share(periodGroups[periodGroups.length - 2]), s1 = share(periodGroups[periodGroups.length - 1]);
+  $("h-mix").textContent = `Causal evidence on learning: ${(100 * s0).toFixed(0)}% of ${D.periods[D.periods.length - 2]} papers, ${(100 * s1).toFixed(0)}% of ${D.periods[D.periods.length - 1]} papers`;
+  table("t-mix", ["Period", ...D.tiers], periodGroups.map((g) => [g.label, ...g.parts]));
+
+  // Tiers
+  const tierRows = D.tiers.map((t, i) => ({ label: t, value: P.filter((p) => p.tier === i).length, color: TIER_VARS[i], help: D.tierHelp[t] }));
+  hbar("c-tiers", tierRows, { total: N });
+  const big = [...tierRows].sort((a, b) => b.value - a.value)[0];
+  $("h-tiers").textContent = `The largest group (${pct(big.value, N)}) is "${big.label}"; ${pct(tierRows[0].value, N)} of papers report causal evidence on learning`;
+  table("t-tiers", ["Evidence tier", "Papers", "Share", "Definition"], tierRows.map((r) => [r.label, r.value, pct(r.value, N), r.help]));
+
+  // Gap map
+  const apps = D.facets.application.options, whys = D.facets.why.options;
+  const pick = { all: () => true, causal: (p) => p.causal, learn: (p) => p.tier === 0 }[gapMetric];
+  const cell = (a, w) => { const all = P.filter((p) => p.application.includes(a) && p.why.includes(w)); const v = all.filter(pick).length; return { v, sub: gapMetric === "all" ? `${all.filter((p) => p.tier === 0).length} with causal evidence on learning` : `of ${fmt(all.length)} papers in this cell` }; };
+  const metricLabel = { all: "papers", causal: "causal studies", learn: "causal studies of learning" }[gapMetric];
+  heatmap("c-gap", apps, whys, cell, { metricLabel });
+  const cells = apps.flatMap((a) => whys.map((w) => ({ a, w, all: P.filter((p) => p.application.includes(a) && p.why.includes(w)) })));
+  const thin = cells.filter((c) => c.all.length >= 40).map((c) => ({ ...c, l: c.all.filter((p) => p.tier === 0).length })).sort((x, y) => x.l / x.all.length - y.l / y.all.length);
+  $("h-gap").textContent = thin.length
+    ? `Biggest gap: ${fmt(thin[0].all.length)} papers on ${thin[0].a.toLowerCase()} for ${thin[0].w.replace("Outcomes – ", "").toLowerCase()}, ${thin[0].l ? `only ${thin[0].l}` : "none"} with causal evidence on learning`
+    : `Where the papers are, and where the causal evidence is${inScope()}`;
+  table("t-gap", ["Application", ...whys.map((w) => w.replace("Outcomes – ", ""))], apps.map((a) => [a, ...whys.map((w) => cell(a, w).v)]));
+
+  // Outcomes
+  const emp = P.filter((p) => p.empirical);
+  const outs = ["Learning / achievement", "Behaviour / engagement", "Perceptions / attitudes", "Teacher practice / workload", "AI output quality / accuracy"];
+  const outRows = outs.map((o) => ({ label: o, value: emp.filter((p) => p.out.includes(o)).length }));
+  hbar("c-out", outRows, { total: emp.length });
+  const perc = outRows[2].value, lrn = outRows[0].value;
+  $("h-out").textContent = perc > lrn ? `More empirical studies measure perceptions (${pct(perc, emp.length)}) than learning (${pct(lrn, emp.length)})` : `${pct(lrn, emp.length)} of empirical studies measure learning; ${pct(perc, emp.length)} measure perceptions`;
+  table("t-out", ["Outcome", "Studies", "Share of empirical"], outRows.map((r) => [r.label, r.value, pct(r.value, emp.length)]));
+
+  // Direction
+  const dirGroups = [["Causal, learning", (p) => p.tier === 0], ["Causal, other outcomes", (p) => p.tier === 1], ["Correlational / pre-post", (p) => p.tier === 2]]
+    .map(([label, f]) => { const pp = P.filter(f); return { label, parts: DIRS.map((d) => pp.filter((p) => p.dir === d).length) }; });
+  legend("l-dir", DIRS.map((d) => [d, DIR_VARS[d]]));
+  stacked("c-dir", dirGroups, DIRS.map((d) => [d, DIR_VARS[d]]));
+  const cl = dirGroups[0], clt = cl.parts.reduce((a, b) => a + b, 0);
+  $("h-dir").textContent = clt ? `${pct(cl.parts[0], clt)} of causal studies of learning report a positive result; ${pct(cl.parts[2] + cl.parts[3], clt)} find no effect or harm` : "Direction of results";
+  table("t-dir", ["Group", ...DIRS], dirGroups.map((g) => [g.label, ...g.parts]));
+
+  // Sample sizes
+  const causal = P.filter((p) => p.causal), bins = [["Not stated", 0, 0], ["<30", 1, 29], ["30–99", 30, 99], ["100–299", 100, 299], ["300–999", 300, 999], ["1,000+", 1000, Infinity]];
+  const nb = bins.map(([label, lo, hi]) => ({ label, value: causal.filter((p) => (lo === 0 ? p.n === 0 : p.n >= lo && p.n <= hi)).length }));
+  columns("c-n", nb, { color: "--s1" });
+  const small = nb[1].value + nb[2].value, stated = causal.length - nb[0].value;
+  $("h-n").textContent = stated ? `${pct(small, stated)} of causal studies that state a sample have fewer than 100 participants` : "Sample sizes of causal studies";
+  table("t-n", ["Participants", "Causal studies"], nb.map((b) => [b.label, b.value]));
+
+  // Topic growth, recomputed for the scope
+  const [prev, last] = D.periods.slice(-2), tot = { [prev]: P.filter((p) => p.p === prev).length, [last]: P.filter((p) => p.p === last).length };
+  const byT = {}; P.forEach((p) => { if (p.topic === null) return; (byT[p.topic] ||= { [prev]: 0, [last]: 0, all: 0 }); byT[p.topic].all++; if (p.p in tot) byT[p.topic][p.p]++; });
+  const tr = Object.entries(byT).filter(([, c]) => c[last] >= 6).map(([t, c]) => ({
+    label: D.topics[t], value: Math.log2(((c[last] + 1) / (tot[last] + 1)) / ((c[prev] + 1) / (tot[prev] + 1))),
+    note: `${c[prev]} papers in ${prev} → ${c[last]} in ${last}`, c }));
+  tr.sort((a, b) => b.value - a.value);
+  const trRows = tr.length > 14 ? [...tr.slice(0, 7), ...tr.slice(-7)] : tr;
+  $("trend-span").textContent = `${prev} → ${last}`;
+  if (trRows.length) {
+    diverging("c-trend", trRows);
+    $("h-trend").textContent = `Fastest-growing topic: ${tr[0].label} (share ×${Math.pow(2, tr[0].value).toFixed(1)})`;
+  } else { clear("c-trend").append(el("p", { class: "sub" }, "Too few recent papers in this scope.")); $("h-trend").textContent = "Topic growth"; }
+  table("t-trend", ["Topic", prev, last, "Share change"], tr.map((r) => [r.label, r.c[prev], r.c[last], `×${Math.pow(2, r.value).toFixed(2)}`]));
+
+  // Where / what / which tool
+  const countBy = (list, key, n, skip = []) => { const c = {}; list.forEach((p) => p[key].forEach((x) => { if (!skip.includes(x)) c[x] = (c[x] || 0) + 1; })); return Object.entries(c).sort((a, b) => b[1] - a[1]).slice(0, n).map(([label, value]) => ({ label, value })); };
+  const ctry = countBy(P, "c", 10), withC = P.filter((p) => p.c.length).length;
+  hbar("c-ctry", ctry, { labelW: 130 });
+  $("h-ctry").textContent = withC ? `${pct(withC, N)} of abstracts name a country; ${ctry[0]?.label ?? ""} leads` : "Countries";
+  const subj = countBy(P, "s", 10, ["General / multiple / not stated"]);
+  hbar("c-subj", subj, { labelW: 190 });
+  $("h-subj").textContent = subj.length ? `${subj[0].label} is the most-studied subject` : "Subjects";
+  const tools = countBy(P, "ai", 10), withT = P.filter((p) => p.ai.length).length;
+  hbar("c-tool", tools, { labelW: 130 });
+  $("h-tool").textContent = tools.length ? `${tools[0].label} is named in ${pct(tools[0].value, N)} of abstracts` : "AI tools";
+
+  // SCALE tags vs abstracts
+  const RCT = "Impact – Randomized Controlled Trial", QE = "Impact – Quasi-experimental";
+  const box = clear("c-tags"), t = el("table", { class: "data" }), hr = el("tr");
+  ["SCALE design tag", "Papers tagged", "Abstract describes: RCT", "Quasi-experiment", "Pre-post / survey / usage data", "Other designs"].forEach((h) => hr.append(el("th", {}, h)));
+  t.append(hr);
+  const rowFor = (label, list) => {
+    const r = el("tr"), n = list.length, c = (f) => list.filter(f).length;
+    const vals = [c((p) => p.st.startsWith("Randomized")), c((p) => p.st.startsWith("Quasi")), c((p) => p.tier === 2)];
+    [label, fmt(n), ...vals.map((v) => `${fmt(v)} (${pct(v, n)})`), `${fmt(n - vals.reduce((a, b) => a + b, 0))} (${pct(n - vals.reduce((a, b) => a + b, 0), n)})`]
+      .forEach((v, i) => r.append(el("td", i ? { class: "num" } : {}, v)));
+    t.append(r);
+  };
+  const tagRCT = P.filter((p) => p.design.includes(RCT)), tagQE = P.filter((p) => p.design.includes(QE));
+  rowFor("Impact – Randomized Controlled Trial", tagRCT);
+  rowFor("Impact – Quasi-experimental", tagQE);
+  rowFor("Neither impact tag", P.filter((p) => !p.design.includes(RCT) && !p.design.includes(QE)));
+  box.append(t);
+  const rctAgree = tagRCT.filter((p) => p.st.startsWith("Randomized")).length, untaggedRct = P.filter((p) => p.st.startsWith("Randomized") && !p.design.includes(RCT));
+  $("h-tags").textContent = `Of ${fmt(tagRCT.length)} papers SCALE tags as RCTs, ${pct(rctAgree, tagRCT.length)} describe random assignment in the abstract, and ${fmt(untaggedRct.length)} untagged papers do`;
+  if (untaggedRct.length) {
+    const d = el("details"); d.append(el("summary", {}, `Show the ${untaggedRct.length} papers that describe an RCT but aren't tagged as one`));
+    const ul = el("ul"); untaggedRct.slice(0, 200).forEach((p) => { const li = el("li"); li.append(el("a", { href: `https://scale.stanford.edu/ai/repository/${p.id}`, target: "_blank", rel: "noopener" }, p.t)); li.append(document.createTextNode(` · tagged: ${p.design.join(", ") || "none"}`)); ul.append(li); });
+    d.append(ul); box.append(d);
+  }
+
+  renderList(P);
+}
+
+function renderList(P = scoped()) {
+  const qv = $("list-q").value.trim().toLowerCase(), dir = $("list-dir").value, sort = $("list-sort").value;
+  let L = P.filter((p) => p.tier === 0 && (!dir || p.dir === dir));
+  if (qv) L = L.filter((p) => [p.t, p.f, p.who, p.ai.join(" "), p.c.join(" "), p.s.join(" ")].join(" ").toLowerCase().includes(qv));
+  L.sort(sort === "n" ? (a, b) => b.n - a.n : sort === "m" ? (a, b) => (b.m || "").localeCompare(a.m || "") : (a, b) => (b.cites ?? -1) - (a.cites ?? -1));
+  const all = P.filter((p) => p.tier === 0).length;
+  $("h-list").textContent = `The causal evidence on learning: ${fmt(all)} studies${inScope()}`;
+  const t = el("table", { class: "data" }), hr = el("tr");
+  ["Study", "First posted", "Participants", "n", "Result", "Key finding (from the abstract)"].forEach((h) => hr.append(el("th", {}, h)));
+  t.append(hr);
+  L.forEach((p) => {
+    const r = el("tr"), c0 = el("td");
+    c0.append(el("a", { href: p.link || `https://scale.stanford.edu/ai/repository/${p.id}`, target: "_blank", rel: "noopener" }, (p.flag ? "⚠ " : "") + p.t));
+    c0.append(el("div", { class: "sub", style: "margin:2px 0 0" }, [p.st.replace(" (comparison group, not randomized)", ""), p.c.join(", "), p.ai.join(", ")].filter(Boolean).join(" · ")));
+    const sc = el("a", { href: `https://scale.stanford.edu/ai/repository/${p.id}`, target: "_blank", rel: "noopener", style: "font-size:11.5px" }, "SCALE entry ↗");
+    c0.append(sc);
+    const dt = el("span", { class: "dirtag" }, p.dir || "n/a"); dt.style.setProperty("--c", css(DIR_VARS[p.dir] || "--null"));
+    const tdDir = el("td"); tdDir.append(dt);
+    r.append(c0, el("td", { class: "num" }, p.m), el("td", {}, p.who === "Not stated" ? "" : p.who), el("td", { class: "num" }, p.n ? fmt(p.n) : "–"), tdDir, el("td", {}, p.f));
+    t.append(r);
+  });
+  const box = clear("c-list");
+  if (!L.length) box.append(el("p", { class: "sub" }, "No studies match.")); else box.append(t);
+}
+
+function renderMethod() {
+  const m = clear("method"), a = D.audit;
+  const ps = [
+    `Papers: every entry in the SCALE repository with an abstract (${fmt(D.papers.length)}), fetched ${D.built}. SCALE's own tags are shown as SCALE assigned them.`,
+    "Evidence profiles: Claude Sonnet 4.6 read each title and abstract and recorded the study type, outcomes measured, direction of the main result, number of participants, country, subject and AI tools. It was told to answer \"not stated\" rather than guess. Only the abstract is read, so a design or result the abstract leaves out isn't captured.",
+    "Evidence tier: a fixed rule, not a judgement. RCT or quasi-experiment that measures learning → \"Causal evidence on learning\"; RCT or quasi-experiment with other outcomes → \"Causal evidence, other outcomes\"; pre-post, survey, correlational or usage-data studies → \"Correlational / pre-post\"; and so on. A tier says what kind of evidence a paper reports, not whether it is well done.",
+    a ? `Audit: a second pass compared every paper's extraction with its abstract (${fmt(a.n)} papers). Study type was judged correct for ${Math.round(100 * (a.study_type.correct || 0))}% of papers, debatable for ${Math.round(100 * (a.study_type.debatable || 0))}% and wrong for ${Math.round(100 * (a.study_type.wrong || 0))}%. ${fmt(a.flagged)} papers have at least one questioned field and carry a ⚠. The judge is the same model family, so treat this as a consistency check.` : "Audit: not run yet.",
+    "Dates: \"first posted\" uses the arXiv id (YYMM) when the link is to arXiv, because SCALE's date is often the latest version. Otherwise SCALE's date is used. The latest period is a partial year, so trends compare shares, not counts.",
+    "Peer review: from Semantic Scholar publication types and venue. Papers not found there are left out of that percentage.",
+  ];
+  ps.forEach((t) => m.append(el("p", {}, t)));
+}
+
+["f-age", "f-ai", "f-app"].forEach((id) => $(id).addEventListener("change", render));
+$("g-metric").addEventListener("click", (e) => { if (!e.target.dataset.m) return; gapMetric = e.target.dataset.m; [...$("g-metric").children].forEach((b) => b.classList.toggle("active", b === e.target)); render(); });
+["list-q", "list-sort", "list-dir"].forEach((id) => $(id).addEventListener("input", () => renderList()));
+let rz; addEventListener("resize", () => { clearTimeout(rz); rz = setTimeout(render, 150); });
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", render);
+renderMethod();
+render();
+</script>
+</body>
+</html>

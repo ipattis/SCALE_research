@@ -1,0 +1,159 @@
+/* ---- Top navigation ---- */
+#nx-nav { position: fixed; top: 10px; left: 16px; z-index: 900;
+  display: flex; gap: 14px; align-items: center; flex-wrap: wrap;
+  background: rgba(255,255,255,.94); border-radius: 12px; padding: 6px 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,.15); font-family: Roboto, sans-serif; max-width: 96vw; }
+.nx-group { display: flex; gap: 4px; align-items: center; }
+#nx-nav button, #nx-nav a { font: 500 13px Roboto, sans-serif; border: 1px solid #d6d6d6; background: #fff;
+  border-radius: 16px; padding: 5px 11px; cursor: pointer; color: #333; text-decoration: none; white-space: nowrap; }
+#nx-nav .active { background: #2457c5; color: #fff; border-color: #2457c5; }
+#nx-lasso-add { background: #fff3c4 !important; border-color: #e6c84a !important; }
+#nx-pin { display: inline-flex; }
+#nx-github { display: inline-flex; align-items: center; gap: 5px; }
+#nx-github.hidden { display: none !important; }
+@media (min-width: 761px) {
+  body.nx-sheet-open #nx-nav { max-width: calc(100vw - 476px); }
+  body.nx-sheet-open .stack.top-left { transform: translateY(92px); }  /* below the wrapped toolbar */
+}
+.nx-gh-count { font-size: 12px; color: #555; border-left: 1px solid #ddd; padding-left: 5px; }
+.nx-gh-count b { font-weight: 600; }
+#nx-pin-show { background: #fde8e8 !important; border-color: #e62828 !important; border-radius: 16px 0 0 16px !important; }
+#nx-pin-remove { border-color: #e62828 !important; border-left: none !important; border-radius: 0 16px 16px 0 !important; padding: 5px 9px !important; }
+.hidden { display: none !important; }
+@media (min-width: 761px) {
+  body.nx-sheet-open #nx-nav { max-width: calc(100vw - 476px); }
+  body.nx-sheet-open .stack.top-left { transform: translateY(92px); }  /* below the wrapped toolbar */
+}
+.stack.top-left { transform: translateY(50px); }  /* make room for the toolbar above datamapplot's title */
+
+/* datamapplot's loading progress box has an inline width of 500px. On phones it overflowed the screen while
+   loading, so mobile Chrome widened the layout viewport (390 -> 473px) and the map and zoom buttons stayed
+   sized to that wider viewport, off the right edge. Cap it to the screen. */
+#progress-container { width: min(500px, calc(100vw - 56px)) !important; box-sizing: border-box; }  /* 56px allows for its 16px container margin */
+
+/* ---- Zoom controls ---- */
+#nx-zoom { position: fixed; right: 16px; bottom: 64px; z-index: 900; transition: right .2s ease, bottom .2s ease; display: flex; flex-direction: column;
+  background: #fff; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,.18); overflow: hidden; }
+#nx-zoom button { width: 38px; height: 38px; border: none; border-bottom: 1px solid #e6e6e6; background: #fff;
+  font: 500 20px/1 Roboto, sans-serif; color: #333; cursor: pointer; }
+#nx-zoom button:last-child { border-bottom: none; }
+#nx-zoom button:hover { background: #f1f4fb; }
+#nx-zoom button:disabled { color: #bbb; cursor: default; background: #fff; }
+
+/* ---- Side sheets (paper details, agenda) ---- */
+.nx-sheet { position: fixed; top: 0; right: 0; width: 440px; max-width: 94vw; height: 100vh; overflow-y: auto;
+  background: #fff; box-shadow: -4px 0 18px rgba(0,0,0,.18); z-index: 1000; padding: 22px 24px 40px;
+  font-family: Roboto, sans-serif; box-sizing: border-box; color: #222; }
+.nx-close { position: absolute; top: 10px; right: 14px; border: none; background: none; font-size: 26px;
+  cursor: pointer; color: #888; }
+#paper-badges span { display: inline-block; font-size: 11px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: .05em; padding: 2px 8px; border-radius: 10px; background: #eef; color: #335; margin: 0 4px 4px 0; }
+#paper-badges .Oral { background: #ffe3d6; color: #a33a00; }
+#paper-badges .Spotlight { background: #fff3c4; color: #7a5a00; }
+#paper-badges .cite { background: #e5f4ea; color: #1d6b39; }
+#paper-badges .tier { background: #e3ecfb; color: #1c4f9c; text-transform: none; letter-spacing: 0; }
+#paper-badges .peer { background: #e5f4ea; color: #1d6b39; }
+#paper-badges .pre { background: #f1f1f1; color: #555; }
+#paper-evidence, #paper-scale { font-size: 12.5px; border-collapse: collapse; width: 100%; }
+#paper-evidence th, #paper-scale th { text-align: left; font-weight: 500; color: #888; padding: 2px 10px 2px 0; vertical-align: top; white-space: nowrap; width: 1%; }
+#paper-evidence td, #paper-scale td { padding: 2px 0; color: #333; }
+.paper-section h4 .nx-muted { text-transform: none; letter-spacing: 0; font-weight: 400; font-size: 11px; }
+#paper-title { font-size: 19px; line-height: 1.3; margin: 10px 0 6px; }
+#paper-authors { font-size: 12.5px; color: #555; margin-bottom: 4px; }
+#paper-institutions { font-size: 11.5px; color: #888; margin-bottom: 6px; }
+#paper-cluster { font-size: 12px; color: #777; margin-bottom: 10px; }
+.nx-note { font-size: 12.5px; line-height: 1.45; background: #f5f7fb; border-radius: 8px; padding: 8px 10px; margin: 8px 0; }
+.nx-note:empty, .nx-warn:empty { display: none; }
+.nx-warn { font-size: 12px; background: #fff4e5; color: #8a4b00; border-radius: 8px; padding: 6px 10px; margin: 8px 0; }
+.nx-trend { font-weight: 600; }
+.nx-trend.Surging, .nx-trend.Growing { color: #1d6b39; }
+.nx-trend.Shrinking, .nx-trend.Cooling { color: #a33a00; }
+.paper-section h4 { font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: #888; margin: 14px 0 4px; }
+.paper-section p { font-size: 13.5px; line-height: 1.5; margin: 0; }
+.paper-section summary { cursor: pointer; font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: #888; margin-top: 14px; }
+#paper-tags { margin-top: 12px; }
+#paper-tags span { display: inline-block; font-size: 11.5px; background: #f1f1f1; border-radius: 10px; padding: 2px 9px; margin: 0 4px 4px 0; color: #444; }
+#paper-links a { display: inline-block; margin: 14px 12px 0 0; font-size: 13px; font-weight: 600; color: #2457c5; text-decoration: none; }
+.nx-primary, .nx-row button { font: 500 13px Roboto, sans-serif; border-radius: 16px; padding: 6px 12px; cursor: pointer;
+  border: 1px solid #d6d6d6; background: #fff; }
+button.nx-primary { background: #2457c5; color: #fff; border-color: #2457c5; }
+button.nx-primary.saved { background: #1d6b39; border-color: #1d6b39; }
+.nx-row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin: 10px 0; }
+.nx-muted { font-size: 12.5px; color: #777; line-height: 1.45; }
+
+/* ---- Reading list ---- */
+#agenda-list h3 { font-size: 13px; text-transform: uppercase; letter-spacing: .05em; color: #888; margin: 18px 0 6px; }
+.agenda-item { display: flex; gap: 8px; align-items: flex-start; padding: 7px 0; border-bottom: 1px solid #eee; font-size: 13px; }
+.agenda-item .when { min-width: 92px; color: #555; font-size: 12px; }
+.agenda-item .what { flex: 1; }
+.agenda-item .where { color: #888; font-size: 11.5px; }
+.agenda-item button { border: none; background: none; color: #aaa; cursor: pointer; font-size: 16px; }
+.agenda-clash { color: #a33a00; font-size: 11px; font-weight: 600; }
+
+/* ---- Trends panel ---- */
+#trends-layers button, #trends-sort button { font-size: 12px; padding: 4px 10px; }
+#trends-layers button.active, #trends-sort button.active { background: #2457c5; color: #fff; border-color: #2457c5; }
+.trend-row { padding: 8px 6px; border-bottom: 1px solid #eee; cursor: pointer; border-radius: 6px; }
+.trend-row:hover { background: #f5f7fb; }
+.trend-row.open { background: #eef3ff; }
+.trend-head { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
+.trend-name { font-size: 13.5px; font-weight: 600; }
+.trend-x { font-size: 12.5px; font-weight: 700; white-space: nowrap; }
+.trend-x.up { color: #1d6b39; } .trend-x.down { color: #a33a00; } .trend-x.flat { color: #666; }
+.trend-facts { display: flex; flex-direction: column; gap: 2px; margin-left: 8px; font-size: 11.5px; color: #555; }
+.trend-bars { display: flex; gap: 6px; align-items: flex-end; margin-top: 5px; }
+.trend-bar { display: flex; flex-direction: column; align-items: center; font-size: 10.5px; color: #777; }
+.trend-bar div { width: 34px; background: #9fb6e8; border-radius: 3px 3px 0 0; }
+.trend-bar:last-child div { background: #2457c5; }
+.trend-note { font-size: 12.5px; line-height: 1.45; margin-top: 6px; color: #333; }
+#trends-clear { margin: 4px 0 8px; font: 500 12px Roboto, sans-serif; border-radius: 14px; padding: 4px 10px; border: 1px solid #d6d6d6; background: #fff; cursor: pointer; }
+
+/* ---- "Where does my paper fit?" modal ---- */
+#fit-modal { position: fixed; inset: 0; background: rgba(0,0,0,.35); z-index: 1100; display: flex;
+  align-items: center; justify-content: center; font-family: Roboto, sans-serif; }
+.nx-modal-box { position: relative; background: #fff; border-radius: 12px; padding: 22px 24px; width: 620px;
+  max-width: 94vw; max-height: 90vh; overflow-y: auto; box-sizing: border-box; }
+#fit-text { width: 100%; box-sizing: border-box; font: 13px/1.45 Roboto, sans-serif; padding: 8px; border-radius: 8px; border: 1px solid #ccc; }
+#fit-results li { font-size: 13px; margin: 5px 0; cursor: pointer; }
+#fit-place:disabled { opacity: .45; cursor: not-allowed; }
+.nx-sheet { z-index: 1150; }  /* paper details open above the "where does my paper fit?" modal */
+#fit-results li:hover { text-decoration: underline; }
+#fit-results .sim { color: #888; font-size: 11.5px; }
+
+/* ---- Mobile ---- */
+@media (max-width: 760px) {
+  #nx-nav { top: 4px; left: 4px; right: 4px; gap: 6px; padding: 4px 6px; justify-content: center; }
+  #nx-nav button, #nx-nav a { font-size: 11.5px; padding: 4px 8px; }
+  #nx-fit-btn { display: none; }
+  #title-container { display: none !important; }
+  #topic-tree, .stack.top-left > :not(#search-container) { display: none !important; }
+  .stack.top-left { transform: translateY(100px); }  /* below the toolbar, which wraps to three rows */
+  #search-container { max-width: 60vw; }
+  /* keep datamapplot's scaleY(-1) flip on bottom stacks (its boxes un-flip themselves), then shrink */
+  .stack.bottom-left { transform: scaleY(-1) scale(.85); transform-origin: center left; }
+  .nx-sheet { top: auto; bottom: 0; width: 100vw; max-width: 100vw; height: 72vh; border-radius: 14px 14px 0 0;
+    box-shadow: 0 -4px 18px rgba(0,0,0,.2); padding: 18px 16px 40px; }
+  .deck-tooltip { display: none !important; }  /* tap opens the detail sheet instead */
+  #nx-zoom { right: 10px; bottom: 76px; }
+  /* datamapplot gives the colour menu a fixed ~400px inline width, which widened the whole page past the
+     screen on phones (pushing the zoom buttons off the right edge). */
+  html, body { overflow-x: hidden; max-width: 100vw; }
+  /* Below 768px datamapplot hides every corner stack except top-left; keep the colour menu (bottom-left),
+     narrow enough to clear the zoom buttons on the right. */
+  .stack.bottom-left { display: flex !important; }
+  #colormap-selector-container, #colormap-selector-container .color-map-dropdown,
+  #colormap-selector-container .color-map-options {
+    width: auto !important; max-width: calc(100vw - 96px) !important; box-sizing: border-box; }
+  #nx-zoom button { width: 44px; height: 44px; }  /* touch-sized */
+}
+
+/* ---- Filter panel ---- */
+/* One option per row: tick box in its own column, label left-aligned, count right-aligned. */
+#nx-filter-btn.active { background: #2457c5; color: #fff; border-color: #2457c5; }
+.filter-group { border-top: 1px solid #eee; padding: 4px 0 8px; text-align: left; }
+.filter-group h4 { font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: #888; margin: 10px 0 4px; }
+.filter-group label { display: grid; grid-template-columns: 20px 1fr auto; align-items: center; column-gap: 8px;
+  font-size: 13px; line-height: 1.3; padding: 4px 6px; margin: 0 -6px; border-radius: 6px; cursor: pointer; text-align: left; }
+.filter-group label:hover { background: #f5f7fb; }
+.filter-group input[type=checkbox] { margin: 0; width: 15px; height: 15px; justify-self: start; cursor: pointer; }
+.filter-n { color: #999; font-size: 11.5px; font-variant-numeric: tabular-nums; text-align: right; }

@@ -1,0 +1,107 @@
+<nav id="nx-nav">
+  <div class="nx-group" id="nx-views"></div>
+  <div class="nx-group" id="nx-years"></div>
+  <div class="nx-group">
+    <button id="nx-filter-btn" title="Filter by SCALE's tags, evidence tier and outcomes">Filter<span id="nx-filter-n"></span></button>
+    <button id="nx-trends-btn" title="Which topics are growing or shrinking">Trends</button>
+    <button id="nx-fit-btn" title="Paste an abstract to see where it lands">Where does my paper fit?</button>
+    <span id="nx-pin" class="hidden">
+      <button id="nx-pin-show" title="Go back to your paper's pin and its nearest papers">📍 My paper</button>
+      <button id="nx-pin-remove" title="Remove the pin and reset the map">✕</button>
+    </span>
+    <button id="nx-agenda-btn">Reading list (<span id="nx-agenda-count">0</span>)</button>
+    <a id="nx-github" class="hidden" target="_blank" rel="noopener" title="Source code on GitHub">
+      <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+      GitHub
+      <span class="nx-gh-count hidden" id="nx-gh-stars" title="Stars">★ <b>0</b></span>
+      <span class="nx-gh-count hidden" id="nx-gh-forks" title="Forks">⑂ <b>0</b></span>
+    </a>
+    <button id="nx-lasso-add" class="hidden">+ Add <span id="nx-lasso-n">0</span> selected to reading list</button>
+  </div>
+</nav>
+
+<div id="nx-zoom" role="group" aria-label="Zoom controls">
+  <button id="nx-zoom-in" title="Zoom in (+)" aria-label="Zoom in">+</button>
+  <button id="nx-zoom-out" title="Zoom out (−)" aria-label="Zoom out">−</button>
+  <button id="nx-zoom-sel" title="Zoom to highlighted papers" aria-label="Zoom to selection">⊙</button>
+  <button id="nx-zoom-fit" title="Show the whole map (0)" aria-label="Fit whole map">⤢</button>
+  <button id="nx-reset" title="Reset the map to how it looked when the page opened (R)" aria-label="Reset view">↺</button>
+</div>
+
+<aside id="paper-panel" class="nx-sheet hidden">
+  <button class="nx-close" data-close="paper-panel" title="Close">&times;</button>
+  <div id="paper-badges"></div>
+  <h2 id="paper-title"></h2>
+  <div id="paper-authors"></div>
+  <div id="paper-institutions"></div>
+  <div id="paper-cluster"></div>
+  <button id="paper-agenda" class="nx-primary"></button>
+  <div id="paper-trend" class="nx-note"></div>
+  <div id="paper-flag" class="nx-warn"></div>
+  <div class="paper-section"><h4>In plain terms</h4><p id="paper-eli5"></p></div>
+  <div class="paper-section"><h4>Key finding</h4><p id="paper-key_finding"></p></div>
+  <div class="paper-section"><h4>So what for educators</h4><p id="paper-takeaway"></p></div>
+  <div class="paper-section"><h4>Problem</h4><p id="paper-problem"></p></div>
+  <div class="paper-section"><h4>How AI is used</h4><p id="paper-method"></p></div>
+  <div class="paper-section"><h4>Evidence profile <span class="nx-muted">(AI-extracted from the abstract)</span></h4><table id="paper-evidence"></table></div>
+  <div class="paper-section"><h4>SCALE tags <span class="nx-muted">(curated by SCALE)</span></h4><table id="paper-scale"></table></div>
+  <div id="paper-tags"></div>
+  <details class="paper-section"><summary>Abstract</summary><p id="paper-abstract"></p></details>
+  <div id="paper-links"></div>
+</aside>
+
+<aside id="filter-panel" class="nx-sheet hidden">
+  <button class="nx-close" data-close="filter-panel" title="Close">&times;</button>
+  <h2>Filter</h2>
+  <p class="nx-muted">Highlight papers matching <b>all</b> chosen filters (and the period chip). Within one filter, any
+    ticked option matches. SCALE tags are SCALE's own curation. Evidence tier, outcomes and direction are AI-extracted
+    from each abstract and audited (see the evidence page).</p>
+  <div class="nx-row"><button id="filter-clear">Clear all</button><span id="filter-count" class="nx-muted"></span></div>
+  <div id="filter-groups"></div>
+</aside>
+
+<aside id="agenda-panel" class="nx-sheet hidden">
+  <button class="nx-close" data-close="agenda-panel" title="Close">&times;</button>
+  <h2>Reading list</h2>
+  <p class="nx-muted">Saved in this browser and shared across all map pages. Add papers from the detail panel, or lasso a region of the map.</p>
+  <div class="nx-row">
+    <button id="agenda-ris" class="nx-primary" title="Import into Zotero, EndNote or Mendeley">Export citations (.ris)</button>
+    <button id="agenda-csv">Export CSV</button>
+    <button id="agenda-clear">Clear</button>
+  </div>
+  <div id="agenda-list"></div>
+</aside>
+
+<aside id="trends-panel" class="nx-sheet hidden">
+  <button class="nx-close" data-close="trends-panel" title="Close">&times;</button>
+  <h2>Trends <span id="trends-span" class="nx-muted"></span></h2>
+  <p class="nx-muted">Ranked by change in each topic's <b>share</b> of the repository's papers, by when papers first
+    appeared. The latest period is a partial year, so compare shares, not raw counts. Topics with few recent papers are
+    marked <i>Small</i>. Click a topic to highlight its papers.</p>
+  <p class="nx-muted" id="trends-summary"></p>
+  <div class="nx-row" id="trends-layers"></div>
+  <div class="nx-row" id="trends-sort">
+    <button data-sort="up" class="active">Fastest growing</button>
+    <button data-sort="down">Shrinking</button>
+    <button data-sort="size">Largest</button>
+  </div>
+  <button id="trends-clear" class="hidden">Clear highlight</button>
+  <div id="trends-list"></div>
+</aside>
+
+<div id="fit-modal" class="hidden">
+  <div class="nx-modal-box">
+    <button class="nx-close" data-close="fit-modal" title="Close">&times;</button>
+    <h2>Where does my paper fit?</h2>
+    <p class="nx-muted">Paste a title and abstract (or a project description). It's embedded <b>in your browser</b> with
+      Qwen3-Embedding-0.6B (a one-time ~570&nbsp;MB model download, then cached) and placed next to its nearest
+      papers in the repository. Nothing is sent to a server.</p>
+    <textarea id="fit-text" rows="8" placeholder="Title. Abstract..."></textarea>
+    <div class="nx-row">
+      <button id="fit-go" class="nx-primary">Find closest papers</button>
+      <button id="fit-place" disabled title="Find the closest papers first">Place it on the map</button>
+      <span id="fit-status" class="nx-muted"></span>
+    </div>
+    <ol id="fit-results"></ol>
+  </div>
+</div>
